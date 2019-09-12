@@ -49,14 +49,6 @@ namespace SQLDbClonerBeliefTechno
 
         private void btnSelectItems_Click(object sender, EventArgs e)
         {
-            if (txtSourceConn.Text == "")
-            {
-                txtSourceConn.Text = @"Data Source=AONE-PC;Initial Catalog=CouriorSoftSystem;Integrated Security=True";
-            }
-            if(txtDestConn.Text == "")
-            {
-                txtDestConn.Text = @"Data Source=AONE-PC;Initial Catalog=cssTest;Integrated Security=True";
-            }
             try
             {
                 this.Cursor = Cursors.WaitCursor;
