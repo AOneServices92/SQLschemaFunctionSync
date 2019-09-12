@@ -190,6 +190,7 @@ namespace SQLDbClonerBeliefTechno
             this.Cursor = Cursors.WaitCursor;
             transfer.Refresh();
             dgvProgressStatus.DataSource = SelItems;
+            dgvProgressStatus.Columns[0].Width = 40;
             bgWorker.DoWork += bgWorker_DoWork;
             bgWorker.RunWorkerCompleted += bgWorker_RunWorkerCompleted;
             bgWorker.ProgressChanged += bgWorker_ProgressChanged;
