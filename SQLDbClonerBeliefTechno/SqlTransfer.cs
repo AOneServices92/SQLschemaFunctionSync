@@ -275,6 +275,21 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                 }
             }
         }
+        internal void CreateColumns(NamedSmoObject sTable,NamedSmoObject _sColumn)
+        {
+            Table dTable = destinationDatabase.Tables[sTable.Name];
+            Column sColumn = (_sColumn as Column);
+            try
+            {
+                Column coln = new Column(dTable, sColumn.Name, sColumn.DataType);
+                coln.Nullable = true;
+                coln.Create();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
         internal void Refresh()
         {

@@ -241,7 +241,8 @@ namespace SQLDbClonerBeliefTechno
                         {
                             foreach (var col in item.SubObject)
                             {
-                                transfer.CreateObject(col);
+                                //transfer.CreateObject(col);
+                                transfer.CreateColumns(item.Object, col);
                             }
                         }
                     }
