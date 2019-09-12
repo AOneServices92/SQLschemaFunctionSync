@@ -1,23 +1,22 @@
-﻿using System;
+﻿using Microsoft.Data.ConnectionUI;
+using SQLDbClonerBeliefTechno.Core.Schema;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Microsoft.Data.ConnectionUI;
-using SQLDbClonerBeliefTechno.Core.Schema;
 
 namespace SQLDbClonerBeliefTechno
 {
     public partial class frmMain : Form
     {
-        SqlTransfer transfer;
-        List<SqlObject> sItems;
-        List<SqlObject> dItems;
-        int ErrCount = 0;
-        List<SqlObject> SelItems;
+        private SqlTransfer transfer;
+        private List<SqlObject> sItems;
+        private List<SqlObject> dItems;
+        private int ErrCount = 0;
+        private List<SqlObject> SelItems;
+
         public frmMain()
         {
             InitializeComponent();
@@ -56,13 +55,16 @@ namespace SQLDbClonerBeliefTechno
                 sItems = transfer.SourceObjects;
                 dItems = transfer.DestinationObjects;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("Error : " + ex.Message, "Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("Error : " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Cursor = Cursors.Default;
                 return;
             }
-            if(sItems != null && sItems.Count > 0)
+            prgBar.Value = 0;
+            lblProgressPercent.Text = "0.00 %";
+            dgvProgressStatus.DataSource = null;
+            if (sItems != null && sItems.Count > 0)
             {
                 treeViewSource.Nodes.Clear();
                 var sourceNodes = treeViewSource.Nodes;
@@ -71,15 +73,15 @@ namespace SQLDbClonerBeliefTechno
                 string[] dItemTypes = dItems.Select(i => i.Type).Distinct().ToArray();
                 for (int i = 0; i < sItemTypes.Count(); i++)
                 {
-                    TreeNode tnType = new TreeNode { Checked = !dItemTypes.Contains(sItemTypes[i]) , Name = sItemTypes[i], Text = sItemTypes[i] };
+                    TreeNode tnType = new TreeNode { Checked = !dItemTypes.Contains(sItemTypes[i]), Name = sItemTypes[i], Text = sItemTypes[i] };
                     sRoot.Nodes.Add(tnType);
                     var sObjs = sItems.Where(j => j.Type == sItemTypes[i]);
                     var dObjs = dItems.Where(j => j.Type == sItemTypes[i]);
-                    foreach(var sObj in sObjs)
+                    foreach (var sObj in sObjs)
                     {
                         bool sContainsDobj = false;
                         SqlObject dObj = new SqlObject();
-                        foreach(var d in dObjs)
+                        foreach (var d in dObjs)
                         {
                             if (d.Name == sObj.Name)
                             {
@@ -91,7 +93,7 @@ namespace SQLDbClonerBeliefTechno
 
                         TreeNode tnObj = new TreeNode { Checked = !sContainsDobj, Name = sObj.Name, Text = sObj.Name };
                         tnType.Nodes.Add(tnObj);
-                        if(sObj.Type.ToUpper() == "TABLE" && dObj.Type.ToUpper() == "TABLE")
+                        if (sObj.Type.ToUpper() == "TABLE" && dObj.Type.ToUpper() == "TABLE")
                         {
                             var sTable = sObj.SubObject;
                             var dTable = dObj.SubObject;
@@ -101,13 +103,13 @@ namespace SQLDbClonerBeliefTechno
                                 bool sContainsDcols = false;
                                 foreach (var d in dTable)
                                 {
-                                    if(d.Name == sColumn.Name)
+                                    if (d.Name == sColumn.Name)
                                     {
                                         sContainsDcols = true;
                                         break;
                                     }
                                 }
-                                TreeNode tnCol = new TreeNode { Checked = !sContainsDcols,Name = sColumn.Name, Text = sColumn.Name };
+                                TreeNode tnCol = new TreeNode { Checked = !sContainsDcols, Name = sColumn.Name, Text = sColumn.Name };
                                 tnObj.Nodes.Add(tnCol);
                             }
                         }
@@ -119,7 +121,7 @@ namespace SQLDbClonerBeliefTechno
             {
                 MessageBox.Show("No SQL Objects found in source.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            if(dItems != null && dItems.Count > 0)
+            if (dItems != null && dItems.Count > 0)
             {
                 //treeViewSource.Nodes.Clear();
                 treeViewDest.Nodes.Clear();
@@ -143,7 +145,7 @@ namespace SQLDbClonerBeliefTechno
                 }
                 dRoot.ExpandAll();
             }
-            
+
             this.Cursor = Cursors.Default;
         }
 
@@ -154,9 +156,9 @@ namespace SQLDbClonerBeliefTechno
             btnSelectItems.Enabled = false;
             btnStartProcess.Enabled = false;
             SelItems = new List<SqlObject>();
-            foreach(TreeNode type in treeViewSource.Nodes[0].Nodes)
+            foreach (TreeNode type in treeViewSource.Nodes[0].Nodes)
             {
-                foreach(TreeNode Sobject in type.Nodes)
+                foreach (TreeNode Sobject in type.Nodes)
                 {
                     if (Sobject.Checked && type.Text.ToUpper() != "TABLE")
                     {
@@ -167,10 +169,13 @@ namespace SQLDbClonerBeliefTechno
                     {
                         bool isAddToColl = false;
                         SqlObject objs = sItems.Single(i => i.Name == Sobject.Text);
-                        SqlObject objd = new SqlObject { Name = objs.Name,
+                        SqlObject objd = new SqlObject
+                        {
+                            Name = objs.Name,
                             Object = objs.Object,
                             SubObject = new List<Microsoft.SqlServer.Management.Smo.NamedSmoObject>(),
-                            Type = objs.Type};
+                            Type = objs.Type
+                        };
                         foreach (TreeNode Scolumn in Sobject.Nodes)
                         {
                             var subcolobj = objs.SubObject.Single(j => j.Name == Scolumn.Text);
@@ -181,7 +186,7 @@ namespace SQLDbClonerBeliefTechno
                                 isAddToColl = true;
                             }
                         }
-                        if(isAddToColl)
+                        if (isAddToColl)
                             SelItems.Add(objd);
                     }
                 }
@@ -224,7 +229,7 @@ namespace SQLDbClonerBeliefTechno
         private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             double current = 0;
-            double max = SelItems.Count+ (SelItems.Where(i => i.Type == "Table").Count() * 3.0);
+            double max = SelItems.Count + (SelItems.Where(i => i.Type == "Table").Count() * 3.0);
 
             foreach (var item in SelItems)
             {
@@ -249,13 +254,13 @@ namespace SQLDbClonerBeliefTechno
                     }
                     item.Status = Properties.Resources.success;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     item.Status = Properties.Resources.failure;
                     item.Error = ex.Message;
-                    if(ex.InnerException != null)
+                    if (ex.InnerException != null)
                     {
-                        item.Error += " => "+ex.InnerException.Message;
+                        item.Error += " => " + ex.InnerException.Message;
                     }
                     ErrCount++;
                 }

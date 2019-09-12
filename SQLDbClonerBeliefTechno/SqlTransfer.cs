@@ -60,7 +60,7 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
 
         private void InitServer(Server serv)
         {
-            // set the default properties we want upon partial instantiation - 
+            // set the default properties we want upon partial instantiation -
             // smo is *really* slow if you don't do this
             serv.SetDefaultInitFields(typeof(Table), "IsSystemObject", "Name");
             serv.SetDefaultInitFields(typeof(StoredProcedure), "IsSystemObject", "Name");
@@ -104,10 +104,10 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
             transfer.ObjectList.Clear();
             transfer.ObjectList.Add(obj);
             if (DestinationObjects.Any(d => d.Name == obj.Name))
-            {                
+            {
                 transfer.Options.ScriptDrops = true;
                 foreach (var script in transfer.ScriptTransfer())
-                    (new SqlCommand(script, destinationConnection.SqlConnectionObject)).ExecuteNonQuery();                
+                    (new SqlCommand(script, destinationConnection.SqlConnectionObject)).ExecuteNonQuery();
             }
             transfer.Options.ScriptDrops = false;
             foreach (var script in transfer.ScriptTransfer())
@@ -130,9 +130,9 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
         {
             List<SqlObject> items = new List<SqlObject>();
 
-            foreach(SqlAssembly item in db.Assemblies)
+            foreach (SqlAssembly item in db.Assemblies)
             {
-                if(!item.IsSystemObject)
+                if (!item.IsSystemObject)
                     items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
             }
 
@@ -155,32 +155,32 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                     {
                         Cols.Add(col);
                     }
-                    items.Add(new SqlObject { Name = item.Name, Object = item,SubObject = Cols, Type = item.GetType().Name });
+                    items.Add(new SqlObject { Name = item.Name, Object = item, SubObject = Cols, Type = item.GetType().Name });
                 }
             }
 
             foreach (Microsoft.SqlServer.Management.Smo.View item in db.Views)
             {
                 if (!item.IsSystemObject)
-                items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
+                    items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
             }
 
             foreach (UserDefinedFunction item in db.UserDefinedFunctions)
             {
                 if (!item.IsSystemObject)
-                items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
+                    items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
             }
 
             foreach (StoredProcedure item in db.StoredProcedures)
             {
                 if (!item.IsSystemObject)
-                items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
+                    items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
             }
 
             foreach (Microsoft.SqlServer.Management.Smo.DatabaseDdlTrigger item in db.Triggers)
             {
                 if (!item.IsSystemObject)
-                items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
+                    items.Add(new SqlObject { Name = item.Name, Object = item, Type = item.GetType().Name });
             }
 
             return items;
@@ -275,7 +275,8 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                 }
             }
         }
-        internal void CreateColumns(NamedSmoObject sTable,NamedSmoObject _sColumn)
+
+        internal void CreateColumns(NamedSmoObject sTable, NamedSmoObject _sColumn)
         {
             Table dTable = destinationDatabase.Tables[sTable.Name];
             Column sColumn = (_sColumn as Column);
@@ -287,7 +288,6 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -297,6 +297,4 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
             DestinationObjects = GetSqlObjects(destinationDatabase);
         }
     }
-
-    
 }
