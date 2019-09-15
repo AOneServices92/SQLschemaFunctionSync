@@ -16,7 +16,7 @@ namespace SQLDbClonerBeliefTechno
         private List<SqlObject> dItems;
         private int ErrCount = 0;
         private List<SqlObject> SelItems;
-
+        private List<SqlObject> GrdItems;
         public frmMain()
         {
             InitializeComponent();
@@ -80,7 +80,7 @@ namespace SQLDbClonerBeliefTechno
                     foreach (var sObj in sObjs)
                     {
                         bool sContainsDobj = false;
-                        SqlObject dObj = new SqlObject();
+                        SqlObject dObj = null;
                         foreach (var d in dObjs)
                         {
                             if (d.Name == sObj.Name)
@@ -93,7 +93,7 @@ namespace SQLDbClonerBeliefTechno
 
                         TreeNode tnObj = new TreeNode { Checked = !sContainsDobj, Name = sObj.Name, Text = sObj.Name };
                         tnType.Nodes.Add(tnObj);
-                        if (sObj.Type.ToUpper() == "TABLE" && dObj.Type.ToUpper() == "TABLE")
+                        if (sObj.Type.ToUpper() == "TABLE" && dObj != null)
                         {
                             var sTable = sObj.SubObject;
                             var dTable = dObj.SubObject;
@@ -156,6 +156,7 @@ namespace SQLDbClonerBeliefTechno
             btnSelectItems.Enabled = false;
             btnStartProcess.Enabled = false;
             SelItems = new List<SqlObject>();
+            GrdItems = new List<SqlObject>();
             foreach (TreeNode type in treeViewSource.Nodes[0].Nodes)
             {
                 foreach (TreeNode Sobject in type.Nodes)
@@ -163,6 +164,14 @@ namespace SQLDbClonerBeliefTechno
                     if (Sobject.Checked && type.Text.ToUpper() != "TABLE")
                     {
                         SqlObject objd = sItems.Single(i => i.Name == Sobject.Text);
+                        objd.Status = Properties.Resources.Unknown;
+                        SelItems.Add(objd);
+                    }
+                    else if (Sobject.Checked && type.Text.ToUpper() == "TABLE")
+                    {
+                        SqlObject objd = sItems.Single(i => i.Name == Sobject.Text);
+                        objd.Status = Properties.Resources.Unknown;
+                        objd.SubObject = null;
                         SelItems.Add(objd);
                     }
                     else if (type.Text.ToUpper() == "TABLE")
@@ -174,7 +183,8 @@ namespace SQLDbClonerBeliefTechno
                             Name = objs.Name,
                             Object = objs.Object,
                             SubObject = new List<Microsoft.SqlServer.Management.Smo.NamedSmoObject>(),
-                            Type = objs.Type
+                            Type = objs.Type,
+                            Status = Properties.Resources.Unknown
                         };
                         foreach (TreeNode Scolumn in Sobject.Nodes)
                         {
@@ -191,6 +201,32 @@ namespace SQLDbClonerBeliefTechno
                     }
                 }
             }
+            foreach (var item in SelItems)
+            {
+                GrdItems.Add(item);
+            }
+            foreach (var item in GrdItems.Where(i => i.Type == "Table"))
+            {
+                SqlObject ob = new SqlObject { Name = item.Name, Type = "PrimaryKey" };
+                ob.Status = Properties.Resources.Unknown;
+                ob.Object = item.Object;
+                SelItems.Add(ob);
+            }
+            foreach (var item in GrdItems.Where(i => i.Type == "Table"))
+            {
+                SqlObject ob = new SqlObject { Name = item.Name, Type = "ForeignKey" };
+                ob.Status = Properties.Resources.Unknown;
+                ob.Object = item.Object;
+                SelItems.Add(ob);
+            }
+            foreach (var item in GrdItems.Where(i => i.Type == "Table"))
+            {
+                SqlObject ob = new SqlObject { Name = item.Name, Type = "Constraints" };
+                ob.Status = Properties.Resources.Unknown;
+                ob.Object = item.Object;
+                SelItems.Add(ob);
+            }
+
 
             this.Cursor = Cursors.WaitCursor;
             transfer.Refresh();
@@ -222,6 +258,7 @@ namespace SQLDbClonerBeliefTechno
             txtSourceConn.Text = "";
             treeViewDest.Nodes.Clear();
             treeViewSource.Nodes.Clear();
+            dgvProgressStatus.DataSource = GrdItems;
             string MessageText = "Operation Completed " + (ErrCount == 0 ? "Successfully" : "with " + ErrCount + " errors.");
             MessageBox.Show(MessageText, "Process Completed.", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -229,9 +266,8 @@ namespace SQLDbClonerBeliefTechno
         private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             double current = 0;
-            double max = SelItems.Count + (SelItems.Where(i => i.Type == "Table").Count() * 3.0);
-
-            foreach (var item in SelItems)
+            double max = SelItems.Count;
+            foreach (var item in SelItems.Where(i=>i.Type == "Table" || i.Type.ToUpper() == "STOREDPROCEDURE" || i.Type.ToUpper() == "USERDEFINEDFUNCTION"))
             {
                 if (bgWorker.CancellationPending)
                     break;
@@ -240,6 +276,10 @@ namespace SQLDbClonerBeliefTechno
                     if (item.Type.ToUpper() == "STOREDPROCEDURE" || item.Type.ToUpper() == "USERDEFINEDFUNCTION")
                     {
                         transfer.DropAndCreateObject(item.Object);
+                    }
+                    else if (item.Type.ToUpper() == "TABLE" && (item.SubObject == null || item.SubObject.Count < 1))
+                    {
+                        transfer.CreateObject(item.Object);
                     }
                     else if (item.Type.ToUpper() == "TABLE")
                     {
@@ -267,21 +307,65 @@ namespace SQLDbClonerBeliefTechno
                 bgWorker.ReportProgress((int)(((++current) / max) * 100.0));
             }
 
-            foreach (var item in SelItems.Where(i => i.Type == "Table"))
+            transfer = new SqlTransfer(txtSourceConn.Text, txtDestConn.Text);
+            
+            foreach (var item in SelItems.Where(i => i.Type == "PrimaryKey"))
             {
-                transfer.ApplyIndexes(item.Object);
+                try
+                {
+                    transfer.ApplyIndexes(item.Object);
+                    item.Status = Properties.Resources.success;
+                }
+                catch(Exception ex)
+                {
+                    item.Status = Properties.Resources.failure;
+                    item.Error = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        item.Error += " => " + ex.InnerException.Message;
+                    }
+                    ErrCount++;
+                }
                 bgWorker.ReportProgress((int)(((++current) / max) * 100.0));
             }
 
-            foreach (var item in SelItems.Where(i => i.Type == "Table"))
+            foreach (var item in SelItems.Where(i => i.Type == "ForeignKey"))
             {
-                transfer.ApplyForeignKeys(item.Object);
+                try
+                {
+                    transfer.ApplyForeignKeys(item.Object);
+                    item.Status = Properties.Resources.success;
+                }
+                catch(Exception ex)
+                {
+                    item.Status = Properties.Resources.failure;
+                    item.Error = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        item.Error += " => " + ex.InnerException.Message;
+                    }
+                    ErrCount++;
+                }
                 bgWorker.ReportProgress((int)(((++current) / max) * 100.0));
             }
 
-            foreach (var item in SelItems.Where(i => i.Type == "Table"))
+            foreach (var item in SelItems.Where(i => i.Type == "Constraints"))
             {
-                transfer.ApplyChecks(item.Object);
+                try
+                {
+                    transfer.ApplyChecks(item.Object);
+                    item.Status = Properties.Resources.success;
+                }
+                catch(Exception ex)
+                {
+                    item.Status = Properties.Resources.failure;
+                    item.Error = ex.Message;
+                    if (ex.InnerException != null)
+                    {
+                        item.Error += " => " + ex.InnerException.Message;
+                    }
+                    ErrCount++;
+                }
                 bgWorker.ReportProgress((int)(((++current) / max) * 100.0));
             }
         }

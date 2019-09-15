@@ -188,6 +188,8 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
 
         internal void ApplyIndexes(NamedSmoObject sTable)
         {
+            destinationDatabase = destinationServer.Databases[destinationServer.ConnectionContext.DatabaseName];
+            Refresh();
             var dTable = destinationDatabase.Tables[sTable.Name];
             foreach (Index srcind in (sTable as Table).Indexes)
             {
@@ -219,12 +221,15 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                 catch (Exception exc)
                 {
                     // Not yet handled
+                    throw exc;
                 }
             }
         }
 
         internal void ApplyForeignKeys(NamedSmoObject sTable)
         {
+            destinationDatabase = destinationServer.Databases[destinationServer.ConnectionContext.DatabaseName];
+            Refresh();
             var dTable = destinationDatabase.Tables[sTable.Name];
             foreach (ForeignKey sourcefk in (sTable as Table).ForeignKeys)
             {
@@ -252,12 +257,15 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                 catch (Exception exc)
                 {
                     // Not yet handled
+                    throw exc;
                 }
             }
         }
 
         internal void ApplyChecks(NamedSmoObject sTable)
         {
+            destinationDatabase = destinationServer.Databases[destinationServer.ConnectionContext.DatabaseName];
+            Refresh();
             var dTable = destinationDatabase.Tables[sTable.Name];
             foreach (Check chkConstr in (sTable as Table).Checks)
             {
@@ -272,6 +280,7 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
                 catch (Exception exc)
                 {
                     // Not yet handled
+                    throw exc;
                 }
             }
         }
@@ -280,6 +289,7 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
         {
             Table dTable = destinationDatabase.Tables[sTable.Name];
             Column sColumn = (_sColumn as Column);
+            string s = string.Empty;
             try
             {
                 Column coln = new Column(dTable, sColumn.Name, sColumn.DataType);
@@ -288,6 +298,7 @@ namespace SQLDbClonerBeliefTechno.Core.Schema
             }
             catch (Exception ex)
             {
+                s = ex.Message;
             }
         }
 

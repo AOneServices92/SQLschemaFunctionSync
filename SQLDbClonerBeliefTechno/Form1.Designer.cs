@@ -190,9 +190,9 @@
             this.lblProgressPercent.BackColor = System.Drawing.Color.Transparent;
             this.lblProgressPercent.Location = new System.Drawing.Point(249, 275);
             this.lblProgressPercent.Name = "lblProgressPercent";
-            this.lblProgressPercent.Size = new System.Drawing.Size(36, 13);
+            this.lblProgressPercent.Size = new System.Drawing.Size(39, 13);
             this.lblProgressPercent.TabIndex = 14;
-            this.lblProgressPercent.Text = "100 %";
+            this.lblProgressPercent.Text = "0.00 %";
             // 
             // frmMain
             // 
