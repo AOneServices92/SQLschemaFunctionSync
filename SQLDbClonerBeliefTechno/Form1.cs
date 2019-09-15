@@ -48,6 +48,11 @@ namespace SQLDbClonerBeliefTechno
 
         private void btnSelectItems_Click(object sender, EventArgs e)
         {
+            if(string.IsNullOrWhiteSpace(txtSourceConn.Text)|| string.IsNullOrWhiteSpace(txtSourceConn.Text))
+            {
+                MessageBox.Show("Any of the connections could not be empty.","Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -226,7 +231,11 @@ namespace SQLDbClonerBeliefTechno
                 ob.Object = item.Object;
                 SelItems.Add(ob);
             }
-
+            if (SelItems.Count == 0)
+            {
+                MessageBox.Show("Need to select Items to sync.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             this.Cursor = Cursors.WaitCursor;
             transfer.Refresh();
@@ -258,7 +267,6 @@ namespace SQLDbClonerBeliefTechno
             txtSourceConn.Text = "";
             treeViewDest.Nodes.Clear();
             treeViewSource.Nodes.Clear();
-            dgvProgressStatus.DataSource = GrdItems;
             string MessageText = "Operation Completed " + (ErrCount == 0 ? "Successfully" : "with " + ErrCount + " errors.");
             MessageBox.Show(MessageText, "Process Completed.", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
