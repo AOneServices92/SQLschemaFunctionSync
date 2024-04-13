@@ -51,38 +51,38 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Data.ConnectionUI">
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.Data.ConnectionUI.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.Data.ConnectionUI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfoExtended, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.ConnectionInfoExtended.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.ConnectionInfoExtended.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.Smo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.Smo.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.SmoExtended, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.SmoExtended.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.SqlClrProvider, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.SqlEnum, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Compressed\SqlDbClonerSource\SqlDbCloner\Externals\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+      <HintPath>..\..\..\Externals\Microsoft.SqlServer.SqlEnum.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -131,6 +131,15 @@
     <None Include="res_n_lib-s.7z" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Externals\Microsoft.Data.ConnectionUI.Dialog.dll" />
+    <Content Include="Externals\Microsoft.Data.ConnectionUI.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.ConnectionInfo.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.ConnectionInfoExtended.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.Management.Sdk.Sfc.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.Smo.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.SmoExtended.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.SqlClrProvider.dll" />
+    <Content Include="Externals\Microsoft.SqlServer.SqlEnum.dll" />
     <Content Include="Main.ico" />
     <None Include="Resources\success.png" />
     <None Include="Resources\images.png" />
